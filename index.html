@@ -9,10 +9,10 @@
 <body>
 
     <div class="player-dashboard">
-        <h2 id="title">Click Play to Initialize Stream...</h2>
+        <h2 id="title">Select a Track to Begin...</h2>
         
-        <!-- FIX 1: Added preload="auto" to tell the browser to aggressively download the track chunks in the background -->
-        <audio id="audio-engine" src="" preload="auto" crossorigin="anonymous"></audio>
+        <!-- FIX 1: Removed restrictive crossorigin filters to unblock direct browser streaming -->
+        <audio id="audio-engine" preload="auto"></audio>
 
         <div class="controls-row">
             <button id="prev">⏮ Back</button>
@@ -50,7 +50,6 @@
         let currentTrackIndex = 0;
         let isMuted = false;
         let previousVolume = 1;
-        let isInitialized = false; // Tracks if user has clicked to bypass security block
 
         const audioEngine = document.getElementById('audio-engine');
         const playBtn = document.getElementById('play');
@@ -65,9 +64,9 @@
 
         function loadSong(index) {
             currentTrackIndex = index;
-            audioEngine.src = tracks[index].url;
             
-            // FIX 2: Explicitly tell the browser engine to fetch the new stream source instantly
+            // FIX 2: Force full reset on the tracking source engine to clear buffering freezes
+            audioEngine.src = tracks[index].url;
             audioEngine.load(); 
             
             songTitle.textContent = tracks[index].name;
@@ -86,7 +85,6 @@
                 }
                 
                 item.onclick = () => { 
-                    isInitialized = true;
                     loadSong(i); 
                     startPlayback();
                 };
@@ -95,13 +93,12 @@
         }
 
         function startPlayback() {
-            // FIX 3: Clean handling of the security check promise block
             audioEngine.play()
                 .then(() => {
                     playBtn.textContent = "⏸ Pause";
                 })
                 .catch(error => {
-                    console.log("Playback held by browser safety security checks.", error);
+                    console.log("Playback interaction required", error);
                     playBtn.textContent = "▶ Play";
                 });
         }
@@ -112,8 +109,6 @@
         }
 
         playBtn.onclick = () => {
-            // Clicking the play button instantly clears the browser security block
-            isInitialized = true; 
             if (audioEngine.paused) {
                 startPlayback();
             } else {
@@ -187,7 +182,6 @@
             document.getElementById('next').click(); 
         };
         
-        // Prepare the first track in the cache buffer line
         loadSong(currentTrackIndex);
     </script>
 </body>
