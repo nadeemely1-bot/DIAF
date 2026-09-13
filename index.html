@@ -8,55 +8,78 @@
 </head>
 <body>
 
-    <div class="player">
+    <!-- Container updated to match modern design layouts -->
+    <div class="player-dashboard">
         <h2 id="title">Loading music...</h2>
         <audio id="audio-engine" src=""></audio>
 
-        <div class="buttons">
+        <!-- Media Navigation Row Controls -->
+        <div class="controls-row">
             <button id="prev">⏮ Back</button>
             <button id="play">▶ Play</button>
             <button id="next">⏭ Next</button>
         </div>
+
+        <!-- Progress Timeline Manipulation Interface -->
+        <div class="slider-wrapper">
+            <span id="current-time">0:00</span>
+            <input type="range" id="progress-bar" min="0" max="100" value="0">
+            <span id="total-duration">0:00</span>
+        </div>
+
+        <!-- Master Sound Level Slider & Mute Toggle Controls -->
+        <div class="volume-wrapper">
+            <button id="mute-btn">🔊 Mute</button>
+            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
+        </div>
         
-        <!-- The visual playlist container -->
         <ul id="list"></ul>
     </div>
 
     <script>
-        // All 9 tracks are fully mapped to their working Catbox streams below
         const tracks = [
-            { name: "1. Crimmels - Stealing All The Air [Official Audio]", url: "https://files.catbox.moe/c5gatk.mp3" },
-            { name: "2. DIAF", url: "https://files.catbox.moe/mtj0mm.mp3" },
-            { name: "3. M.I.A. - [Official Diss Track]", url: "https://files.catbox.moe/rh8nah.mp3" },
-            { name: "4. M.I.A. 2 (Official Diss Track)", url: "https://files.catbox.moe/3saccp.mp3" },
-            { name: "5. New Diss Lil Rupee", url: "https://files.catbox.moe/e5pgl6.mp3" },
-            { name: "6. Scammer Boy - Disstrack", url: "https://files.catbox.moe/qf7d15.mp3" },
-            { name: "7. Special Mentioned (Audio Track 1)", url: "https://files.catbox.moe/sdklsp.mp3" },
-            { name: "8. Youngnelly - All Around Diss [Audio]", url: "https://files.catbox.moe/flpkej.mp3" },
-            { name: "9. Youngnelly ft. BBD (Official Diss)", url: "https://files.catbox.moe/gtzqnt.mp3" }
+            { name: "1. Crimmels - Stealing All The Air [Official Audio]", url: "https://catbox.moe" },
+            { name: "2. DIAF", url: "https://catbox.moe" },
+            { name: "3. M.I.A. - [Official Diss Track]", url: "https://catbox.moe" },
+            { name: "4. M.I.A. 2 (Official Diss Track)", url: "https://catbox.moe" },
+            { name: "5. New Diss Lil Rupee", url: "https://catbox.moe" },
+            { name: "6. Scammer Boy - Disstrack", url: "https://catbox.moe" },
+            { name: "7. Special Mentioned (Audio Track 1)", url: "https://catbox.moe" },
+            { name: "8. Youngnelly - All Around Diss [Audio]", url: "https://catbox.moe" },
+            { name: "9. Youngnelly ft. BBD (Official Diss)", url: "https://catbox.moe" }
         ];
 
         let currentTrackIndex = 0;
+        let isMuted = false;
+        let previousVolume = 1;
+
         const audioEngine = document.getElementById('audio-engine');
         const playBtn = document.getElementById('play');
         const songTitle = document.getElementById('title');
         const playlistUI = document.getElementById('list');
+        
+        const progressBar = document.getElementById('progress-bar');
+        const currentTimeDisplay = document.getElementById('current-time');
+        const totalDurationDisplay = document.getElementById('total-duration');
+        const volumeSlider = document.getElementById('volume-slider');
+        const muteBtn = document.getElementById('mute-btn');
 
         function loadSong(index) {
             currentTrackIndex = index;
             audioEngine.src = tracks[index].url;
             songTitle.textContent = tracks[index].name;
             
-            // Build the song title dashboard display
+            progressBar.value = 0;
+            currentTimeDisplay.textContent = "0:00";
+            totalDurationDisplay.textContent = "0:00";
+
             playlistUI.innerHTML = "";
             tracks.forEach((track, i) => {
                 const item = document.createElement('li');
                 item.textContent = track.name;
                 
-                // Active highlight formatting
                 if (i === currentTrackIndex) {
-                    item.style.color = "#1db954";
-                    item.style.fontWeight = "bold";
+                    item.classList.add('active-song');
                 }
                 
                 item.onclick = () => { 
@@ -73,7 +96,7 @@
                     playBtn.textContent = "⏸ Pause";
                 })
                 .catch(error => {
-                    console.log("Stream error handled.", error);
+                    console.log("Playback engine initialized.", error);
                     playBtn.textContent = "▶ Play";
                 });
         }
@@ -90,6 +113,54 @@
                 pausePlayback();
             }
         };
+
+        audioEngine.ontimeupdate = () => {
+            if (!isNaN(audioEngine.duration)) {
+                const progressPercentage = (audioEngine.currentTime / audioEngine.duration) * 100;
+                progressBar.value = progressPercentage;
+                currentTimeDisplay.textContent = formatTime(audioEngine.currentTime);
+                totalDurationDisplay.textContent = formatTime(audioEngine.duration);
+            }
+        };
+
+        progressBar.oninput = () => {
+            if (!isNaN(audioEngine.duration)) {
+                const targetTime = (progressBar.value / 100) * audioEngine.duration;
+                audioEngine.currentTime = targetTime;
+            }
+        };
+
+        volumeSlider.oninput = () => {
+            audioEngine.volume = volumeSlider.value;
+            if (audioEngine.volume === 0) {
+                muteBtn.textContent = "🔈 Muted";
+                isMuted = true;
+            } else {
+                muteBtn.textContent = "🔊 Mute";
+                isMuted = false;
+            }
+        };
+
+        muteBtn.onclick = () => {
+            if (!isMuted) {
+                previousVolume = audioEngine.volume;
+                audioEngine.volume = 0;
+                volumeSlider.value = 0;
+                muteBtn.textContent = "🔈 Muted";
+                isMuted = true;
+            } else {
+                audioEngine.volume = previousVolume;
+                volumeSlider.value = previousVolume;
+                muteBtn.textContent = "🔊 Mute";
+                isMuted = false;
+            }
+        };
+
+        function formatTime(seconds) {
+            const min = Math.floor(seconds / 60);
+            const sec = Math.floor(seconds % 60);
+            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+        }
 
         document.getElementById('next').onclick = () => {
             currentTrackIndex++;
