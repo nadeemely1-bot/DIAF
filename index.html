@@ -23,17 +23,17 @@
     </div>
 
     <script>
-        // All 9 tracks are fully converted and mapped below
+        // All 9 tracks are fully mapped to their working Catbox streams below
         const tracks = [
-            { name: "1. Special Mentioned (Audio Track 1)", url: "https://google.com" },
-            { name: "2. DIAF", url: "https://google.com" },
-            { name: "3. Youngnelly ft. BBD (Official Diss)", url: "https://google.com_" },
-            { name: "4. Crimmels - Stealing All The Air [Official Audio]", url: "https://google.com" },
-            { name: "5. Youngnelly - All Around Diss [Audio]", url: "https://google.com" },
-            { name: "6. M.I.A. - [Official Diss Track]", url: "https://google.com" },
-            { name: "7. M.I.A. 2 (Official Diss Track)", url: "https://google.com" },
-            { name: "8. Scammer Boy - Disstrack", url: "https://google.com" },
-            { name: "9. New Diss Lil Rupee", url: "https://google.com" }
+            { name: "1. Crimmels - Stealing All The Air [Official Audio]", url: "https://files.catbox.moe/c5gatk.mp3" },
+            { name: "2. DIAF", url: "https://files.catbox.moe/mtj0mm.mp3" },
+            { name: "3. M.I.A. - [Official Diss Track]", url: "https://files.catbox.moe/rh8nah.mp3" },
+            { name: "4. M.I.A. 2 (Official Diss Track)", url: "https://files.catbox.moe/3saccp.mp3" },
+            { name: "5. New Diss Lil Rupee", url: "https://files.catbox.moe/e5pgl6.mp3" },
+            { name: "6. Scammer Boy - Disstrack", url: "https://files.catbox.moe/qf7d15.mp3" },
+            { name: "7. Special Mentioned (Audio Track 1)", url: "https://files.catbox.moe/sdklsp.mp3" },
+            { name: "8. Youngnelly - All Around Diss [Audio]", url: "https://files.catbox.moe/flpkej.mp3" },
+            { name: "9. Youngnelly ft. BBD (Official Diss)", url: "https://files.catbox.moe/gtzqnt.mp3" }
         ];
 
         let currentTrackIndex = 0;
@@ -73,7 +73,7 @@
                     playBtn.textContent = "⏸ Pause";
                 })
                 .catch(error => {
-                    console.log("Stream failed. Confirm your direct URL format mapping.", error);
+                    console.log("Stream error handled.", error);
                     playBtn.textContent = "▶ Play";
                 });
         }
