@@ -10,7 +10,6 @@ body {
     padding: 20px;
 }
 
-/* Master Player Box Card */
 .player-dashboard {
     background: linear-gradient(145deg, #111827, #1f2937);
     padding: 30px;
@@ -20,19 +19,14 @@ body {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
                 inset 0 1px 1px rgba(255, 255, 255, 0.1);
     border: 1px solid #374151;
-    transition: transform 0.3s ease;
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Subtle dashboard entry slide animation */
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(15px); }
     to { opacity: 1; transform: translateY(0); }
 }
-.player-dashboard {
-    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
 
-/* Current Track Header */
 h2 {
     font-size: 16px;
     font-weight: 600;
@@ -44,112 +38,26 @@ h2 {
     letter-spacing: 0.5px;
 }
 
-/* Main Navigation Media Controls */
-.controls-row {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
+/* Custom styled visible native media element player box */
+audio {
+    width: 100%;
     margin-bottom: 20px;
-}
-
-.controls-row button {
-    background: #374151;
-    border: 1px solid #4b5563;
-    color: #f3f4f6;
-    padding: 12px 18px;
-    font-size: 14px;
-    font-weight: 600;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Centralized Play Button Highlight Pop */
-#play {
-    background: #10b981;
-    border-color: #34d399;
-    color: #064e3b;
-    padding: 14px 24px;
-    font-size: 15px;
-}
-
-/* PC Hover Micro-Animations */
-.controls-row button:hover {
-    transform: translateY(-2px);
-    background: #4b5563;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-#play:hover {
-    background: #34d399;
-    box-shadow: 0 0 15px rgba(52, 211, 153, 0.4);
-}
-
-.controls-row button:active {
-    transform: translateY(1px);
-}
-
-/* Custom Styled Input Sliders (Timeline & Volume) */
-.slider-wrapper, .volume-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin: 18px 0;
-    font-size: 11px;
-    color: #9ca3af;
-    font-family: monospace;
-}
-
-input[type="range"] {
-    flex-grow: 1;
-    margin: 0 12px;
     accent-color: #10b981;
-    cursor: pointer;
-    height: 5px;
-    border-radius: 5px;
-    background: #374151;
-    transition: opacity 0.2s;
+    border-radius: 8px;
 }
 
-input[type="range"]:hover {
-    accent-color: #34d399;
-}
-
-/* Mute Action Link Styling */
-#mute-btn {
-    background: transparent;
-    border: none;
-    color: #9ca3af;
-    cursor: pointer;
-    font-size: 13px;
-    padding: 4px 8px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-#mute-btn:hover {
-    color: #10b981;
-    background: rgba(16, 185, 129, 0.1);
-}
-
-/* Visual Track Playlist Interface */
 ul {
     text-align: left;
     list-style: none;
     padding: 0;
-    margin: 25px 0 0 0;
+    margin: 20px 0 0 0;
     max-height: 200px;
     overflow-y: auto;
     border-top: 1px solid #2d3748;
 }
 
-/* Custom Scrollbar for playlist window */
 ul::-webkit-scrollbar {
     width: 4px;
-}
-ul::-webkit-scrollbar-track {
-    background: rgba(0,0,0,0.1);
 }
 ul::-webkit-scrollbar-thumb {
     background: #374151;
@@ -171,10 +79,9 @@ li {
 li:hover {
     background: rgba(255, 255, 255, 0.03);
     color: #f3f4f6;
-    padding-left: 14px; /* Subtle slide-right effect */
+    padding-left: 14px;
 }
 
-/* Active Highlight Styling */
 li.active-song {
     color: #10b981 !important;
     font-weight: 600;
