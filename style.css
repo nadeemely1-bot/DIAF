@@ -1,196 +1,184 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Crew Stream</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+body {
+    background-color: #0b0f19;
+    color: #f3f4f6;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
 
-    <div class="player">
-        <h2 id="title">Loading music...</h2>
-        <audio id="audio-engine" src=""></audio>
+/* Master Player Box Card */
+.player-dashboard {
+    background: linear-gradient(145deg, #111827, #1f2937);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    width: 350px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    border: 1px solid #374151;
+    transition: transform 0.3s ease;
+}
 
-        <!-- Media Control Buttons -->
-        <div class="buttons">
-            <button id="prev">⏮ Back</button>
-            <button id="play">▶ Play</button>
-            <button id="next">⏭ Next</button>
-        </div>
+/* Subtle dashboard entry slide animation */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.player-dashboard {
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
 
-        <!-- NEW: Progress Bar and Time Counters -->
-        <div class="slider-container">
-            <span id="current-time">0:00</span>
-            <input type="range" id="progress-bar" min="0" max="100" value="0">
-            <span id="total-duration">0:00</span>
-        </div>
+/* Current Track Header */
+h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #e5e7eb;
+    margin-bottom: 25px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.5px;
+}
 
-        <!-- NEW: Volume Slider and Mute Controller Toggle -->
-        <div class="volume-container">
-            <button id="mute-btn" style="background:transparent; border:none; color:#b3b3b3; cursor:pointer; font-size:14px; padding:0;">🔊 Mute</button>
-            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
-        </div>
-        
-        <ul id="list"></ul>
-    </div>
+/* Main Navigation Media Controls */
+.controls-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
 
-    <script>
-        const tracks = [
-            { name: "1. Crimmels - Stealing All The Air [Official Audio]", url: "https://catbox.moe" },
-            { name: "2. DIAF", url: "https://catbox.moe" },
-            { name: "3. M.I.A. - [Official Diss Track]", url: "https://catbox.moe" },
-            { name: "4. M.I.A. 2 (Official Diss Track)", url: "https://catbox.moe" },
-            { name: "5. New Diss Lil Rupee", url: "https://catbox.moe" },
-            { name: "6. Scammer Boy - Disstrack", url: "https://catbox.moe" },
-            { name: "7. Special Mentioned (Audio Track 1)", url: "https://catbox.moe" },
-            { name: "8. Youngnelly - All Around Diss [Audio]", url: "https://catbox.moe" },
-            { name: "9. Youngnelly ft. BBD (Official Diss)", url: "https://catbox.moe" }
-        ];
+.controls-row button {
+    background: #374151;
+    border: 1px solid #4b5563;
+    color: #f3f4f6;
+    padding: 12px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-        let currentTrackIndex = 0;
-        let isMuted = false;
-        let previousVolume = 1;
+/* Centralized Play Button Highlight Pop */
+#play {
+    background: #10b981;
+    border-color: #34d399;
+    color: #064e3b;
+    padding: 14px 24px;
+    font-size: 15px;
+}
 
-        const audioEngine = document.getElementById('audio-engine');
-        const playBtn = document.getElementById('play');
-        const songTitle = document.getElementById('title');
-        const playlistUI = document.getElementById('list');
-        
-        // Target New Interactive Sliders
-        const progressBar = document.getElementById('progress-bar');
-        const currentTimeDisplay = document.getElementById('current-time');
-        const totalDurationDisplay = document.getElementById('total-duration');
-        const volumeSlider = document.getElementById('volume-slider');
-        const muteBtn = document.getElementById('mute-btn');
+/* PC Hover Micro-Animations */
+.controls-row button:hover {
+    transform: translateY(-2px);
+    background: #4b5563;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
 
-        function loadSong(index) {
-            currentTrackIndex = index;
-            audioEngine.src = tracks[index].url;
-            songTitle.textContent = tracks[index].name;
-            
-            // Reset sliders visuals when song swaps
-            progressBar.value = 0;
-            currentTimeDisplay.textContent = "0:00";
-            totalDurationDisplay.textContent = "0:00";
+#play:hover {
+    background: #34d399;
+    box-shadow: 0 0 15px rgba(52, 211, 153, 0.4);
+}
 
-            playlistUI.innerHTML = "";
-            tracks.forEach((track, i) => {
-                const item = document.createElement('li');
-                item.textContent = track.name;
-                
-                if (i === currentTrackIndex) {
-                    item.style.color = "#1db954";
-                    item.style.fontWeight = "bold";
-                }
-                
-                item.onclick = () => { 
-                    loadSong(i); 
-                    startPlayback();
-                };
-                playlistUI.appendChild(item);
-            });
-        }
+.controls-row button:active {
+    transform: translateY(1px);
+}
 
-        function startPlayback() {
-            audioEngine.play()
-                .then(() => {
-                    playBtn.textContent = "⏸ Pause";
-                })
-                .catch(error => {
-                    console.log("Playback error.", error);
-                    playBtn.textContent = "▶ Play";
-                });
-        }
+/* Custom Styled Input Sliders (Timeline & Volume) */
+.slider-wrapper, .volume-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 18px 0;
+    font-size: 11px;
+    color: #9ca3af;
+    font-family: monospace;
+}
 
-        function pausePlayback() {
-            audioEngine.pause();
-            playBtn.textContent = "▶ Play";
-        }
+input[type="range"] {
+    flex-grow: 1;
+    margin: 0 12px;
+    accent-color: #10b981;
+    cursor: pointer;
+    height: 5px;
+    border-radius: 5px;
+    background: #374151;
+    transition: opacity 0.2s;
+}
 
-        playBtn.onclick = () => {
-            if (audioEngine.paused) {
-                startPlayback();
-            } else {
-                pausePlayback();
-            }
-        };
+input[type="range"]:hover {
+    accent-color: #34d399;
+}
 
-        // Track Timeline Progress Engine Update Logic
-        audioEngine.ontimeupdate = () => {
-            if (!isNaN(audioEngine.duration)) {
-                // Advance slider thumb node positionally 
-                const progressPercentage = (audioEngine.currentTime / audioEngine.duration) * 100;
-                progressBar.value = progressPercentage;
+/* Mute Action Link Styling */
+#mute-btn {
+    background: transparent;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
 
-                // Format standard clock readout display values
-                currentTimeDisplay.textContent = formatTime(audioEngine.currentTime);
-                totalDurationDisplay.textContent = formatTime(audioEngine.duration);
-            }
-        };
+#mute-btn:hover {
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+}
 
-        // Handle user scrubbing manipulation input directly on timeline
-        progressBar.oninput = () => {
-            if (!isNaN(audioEngine.duration)) {
-                const targetTime = (progressBar.value / 100) * audioEngine.duration;
-                audioEngine.currentTime = targetTime;
-            }
-        };
+/* Visual Track Playlist Interface */
+ul {
+    text-align: left;
+    list-style: none;
+    padding: 0;
+    margin: 25px 0 0 0;
+    max-height: 200px;
+    overflow-y: auto;
+    border-top: 1px solid #2d3748;
+}
 
-        // Master Volume Adjustment Input Slider Controller Logic
-        volumeSlider.oninput = () => {
-            audioEngine.volume = volumeSlider.value;
-            if (audioEngine.volume === 0) {
-                muteBtn.textContent = "🔈 Muted";
-                isMuted = true;
-            } else {
-                muteBtn.textContent = "🔊 Mute";
-                isMuted = false;
-            }
-        };
+/* Custom Scrollbar for playlist window */
+ul::-webkit-scrollbar {
+    width: 4px;
+}
+ul::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.1);
+}
+ul::-webkit-scrollbar-thumb {
+    background: #374151;
+    border-radius: 2px;
+}
 
-        // Mute / Unmute Button Toggling Trigger Functions
-        muteBtn.onclick = () => {
-            if (!isMuted) {
-                previousVolume = audioEngine.volume;
-                audioEngine.volume = 0;
-                volumeSlider.value = 0;
-                muteBtn.textContent = "🔈 Muted";
-                isMuted = true;
-            } else {
-                audioEngine.volume = previousVolume;
-                volumeSlider.value = previousVolume;
-                muteBtn.textContent = "🔊 Mute";
-                isMuted = false;
-            }
-        };
+li {
+    padding: 12px 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #1f2937;
+    font-size: 13px;
+    color: #9ca3af;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.2s ease;
+}
 
-        // Clean time conversion helper formula (Seconds conversion to Minute:Seconds output format)
-        function formatTime(seconds) {
-            const min = Math.floor(seconds / 60);
-            const sec = Math.floor(seconds % 60);
-            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
-        }
+li:hover {
+    background: rgba(255, 255, 255, 0.03);
+    color: #f3f4f6;
+    padding-left: 14px; /* Subtle slide-right effect */
+}
 
-        document.getElementById('next').onclick = () => {
-            currentTrackIndex++;
-            if (currentTrackIndex >= tracks.length) currentTrackIndex = 0;
-            loadSong(currentTrackIndex); 
-            startPlayback();
-        };
-
-        document.getElementById('prev').onclick = () => {
-            currentTrackIndex--;
-            if (currentTrackIndex < 0) currentTrackIndex = tracks.length - 1;
-            loadSong(currentTrackIndex); 
-            startPlayback();
-        };
-
-        audioEngine.onended = () => { 
-            document.getElementById('next').click(); 
-        };
-        
-        loadSong(currentTrackIndex);
-    </script>
-</body>
-</html>
+/* Active Highlight Styling */
+li.active-song {
+    color: #10b981 !important;
+    font-weight: 600;
+    background: rgba(16, 185, 129, 0.05);
+    border-left: 3px solid #10b981;
+    padding-left: 12px;
+}
